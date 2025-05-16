@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions 
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:tns="http://bee-srv.me/soap/trello" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+    xmlns:types="http://bee-srv.me/soap/trello/types" 
+    targetNamespace="http://bee-srv.me/soap/trello">
+
+    <!-- Import the types schema -->
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://bee-srv.me/soap/trello/types">
+            <xsd:include schemaLocation="http://localhost:3067/wsdl/types.xsd"/>
+        </xsd:schema>
+    </wsdl:types>
+
+    <!-- Authentication Operations -->
+    <wsdl:message name="LoginRequest">
+        <wsdl:part name="parameters" element="types:LoginRequest"/>
+    </wsdl:message>
+    <wsdl:message name="LoginResponse">
+        <wsdl:part name="parameters" element="types:LoginResponse"/>
+    </wsdl:message>
+    <wsdl:message name="LogoutRequest">
+        <wsdl:part name="parameters" element="types:LogoutRequest"/>
+    </wsdl:message>
+    <wsdl:message name="LogoutResponse">
+        <wsdl:part name="parameters" element="types:LogoutResponse"/>
+    </wsdl:message>
+
+    <!-- User Operations -->
+    <wsdl:message name="GetUsersRequest">
+        <wsdl:part name="parameters" element="types:GetUsersRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetUsersResponse">
+        <wsdl:part name="parameters" element="types:GetUsersResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CreateUserRequest">
+        <wsdl:part name="parameters" element="types:CreateUserRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateUserResponse">
+        <wsdl:part name="parameters" element="types:CreateUserResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteUserRequest">
+        <wsdl:part name="parameters" element="types:DeleteUserRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteUserResponse">
+        <wsdl:part name="parameters" element="types:DeleteUserResponse"/>
+    </wsdl:message>
+    <wsdl:message name="ChangePasswordRequest">
+        <wsdl:part name="parameters" element="types:ChangePasswordRequest"/>
+    </wsdl:message>
+    <wsdl:message name="ChangePasswordResponse">
+        <wsdl:part name="parameters" element="types:ChangePasswordResponse"/>
+    </wsdl:message>
+
+    <!-- Board Operations -->
+    <wsdl:message name="GetBoardsRequest">
+        <wsdl:part name="parameters" element="types:GetBoardsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetBoardsResponse">
+        <wsdl:part name="parameters" element="types:GetBoardsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CreateBoardRequest">
+        <wsdl:part name="parameters" element="types:CreateBoardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateBoardResponse">
+        <wsdl:part name="parameters" element="types:CreateBoardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetBoardRequest">
+        <wsdl:part name="parameters" element="types:GetBoardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetBoardResponse">
+        <wsdl:part name="parameters" element="types:GetBoardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateBoardRequest">
+        <wsdl:part name="parameters" element="types:UpdateBoardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateBoardResponse">
+        <wsdl:part name="parameters" element="types:UpdateBoardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteBoardRequest">
+        <wsdl:part name="parameters" element="types:DeleteBoardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteBoardResponse">
+        <wsdl:part name="parameters" element="types:DeleteBoardResponse"/>
+    </wsdl:message>
+
+    <!-- List Operations -->
+    <wsdl:message name="GetListsRequest">
+        <wsdl:part name="parameters" element="types:GetListsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetListsResponse">
+        <wsdl:part name="parameters" element="types:GetListsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CreateListRequest">
+        <wsdl:part name="parameters" element="types:CreateListRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateListResponse">
+        <wsdl:part name="parameters" element="types:CreateListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetListRequest">
+        <wsdl:part name="parameters" element="types:GetListRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetListResponse">
+        <wsdl:part name="parameters" element="types:GetListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateListRequest">
+        <wsdl:part name="parameters" element="types:UpdateListRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateListResponse">
+        <wsdl:part name="parameters" element="types:UpdateListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteListRequest">
+        <wsdl:part name="parameters" element="types:DeleteListRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteListResponse">
+        <wsdl:part name="parameters" element="types:DeleteListResponse"/>
+    </wsdl:message>
+
+    <!-- Card Operations -->
+    <wsdl:message name="GetCardsRequest">
+        <wsdl:part name="parameters" element="types:GetCardsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetCardsResponse">
+        <wsdl:part name="parameters" element="types:GetCardsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CreateCardRequest">
+        <wsdl:part name="parameters" element="types:CreateCardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateCardResponse">
+        <wsdl:part name="parameters" element="types:CreateCardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetCardRequest">
+        <wsdl:part name="parameters" element="types:GetCardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetCardResponse">
+        <wsdl:part name="parameters" element="types:GetCardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateCardRequest">
+        <wsdl:part name="parameters" element="types:UpdateCardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateCardResponse">
+        <wsdl:part name="parameters" element="types:UpdateCardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteCardRequest">
+        <wsdl:part name="parameters" element="types:DeleteCardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteCardResponse">
+        <wsdl:part name="parameters" element="types:DeleteCardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="AddCardChecklistRequest">
+        <wsdl:part name="parameters" element="types:AddCardChecklistRequest"/>
+    </wsdl:message>
+    <wsdl:message name="AddCardChecklistResponse">
+        <wsdl:part name="parameters" element="types:AddCardChecklistResponse"/>
+    </wsdl:message>
+    <wsdl:message name="AddCardCommentRequest">
+        <wsdl:part name="parameters" element="types:AddCardCommentRequest"/>
+    </wsdl:message>
+    <wsdl:message name="AddCardCommentResponse">
+        <wsdl:part name="parameters" element="types:AddCardCommentResponse"/>
+    </wsdl:message>
+
+    <!-- Comment Operations -->
+    <wsdl:message name="GetCommentsRequest">
+        <wsdl:part name="parameters" element="types:GetCommentsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetCommentsResponse">
+        <wsdl:part name="parameters" element="types:GetCommentsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CreateCommentRequest">
+        <wsdl:part name="parameters" element="types:CreateCommentRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateCommentResponse">
+        <wsdl:part name="parameters" element="types:CreateCommentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetCommentRequest">
+        <wsdl:part name="parameters" element="types:GetCommentRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetCommentResponse">
+        <wsdl:part name="parameters" element="types:GetCommentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateCommentRequest">
+        <wsdl:part name="parameters" element="types:UpdateCommentRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateCommentResponse">
+        <wsdl:part name="parameters" element="types:UpdateCommentResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteCommentRequest">
+        <wsdl:part name="parameters" element="types:DeleteCommentRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteCommentResponse">
+        <wsdl:part name="parameters" element="types:DeleteCommentResponse"/>
+    </wsdl:message>
+
+    <!-- Fault message -->
+    <wsdl:message name="ServiceFault">
+        <wsdl:part name="parameters" element="types:ServiceFault"/>
+    </wsdl:message>
+
+    <!-- Port Type -->
+    <wsdl:portType name="TrelloSoapPort">
+        <!-- Authentication operations -->
+        <wsdl:operation name="Login">
+            <wsdl:input message="tns:LoginRequest"/>
+            <wsdl:output message="tns:LoginResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="Logout">
+            <wsdl:input message="tns:LogoutRequest"/>
+            <wsdl:output message="tns:LogoutResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+
+        <!-- User operations -->
+        <wsdl:operation name="GetUsers">
+            <wsdl:input message="tns:GetUsersRequest"/>
+            <wsdl:output message="tns:GetUsersResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="CreateUser">
+            <wsdl:input message="tns:CreateUserRequest"/>
+            <wsdl:output message="tns:CreateUserResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteUser">
+            <wsdl:input message="tns:DeleteUserRequest"/>
+            <wsdl:output message="tns:DeleteUserResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="ChangePassword">
+            <wsdl:input message="tns:ChangePasswordRequest"/>
+            <wsdl:output message="tns:ChangePasswordResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+
+        <!-- Board operations -->
+        <wsdl:operation name="GetBoards">
+            <wsdl:input message="tns:GetBoardsRequest"/>
+            <wsdl:output message="tns:GetBoardsResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="CreateBoard">
+            <wsdl:input message="tns:CreateBoardRequest"/>
+            <wsdl:output message="tns:CreateBoardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetBoard">
+            <wsdl:input message="tns:GetBoardRequest"/>
+            <wsdl:output message="tns:GetBoardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateBoard">
+            <wsdl:input message="tns:UpdateBoardRequest"/>
+            <wsdl:output message="tns:UpdateBoardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteBoard">
+            <wsdl:input message="tns:DeleteBoardRequest"/>
+            <wsdl:output message="tns:DeleteBoardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+
+        <!-- List operations -->
+        <wsdl:operation name="GetLists">
+            <wsdl:input message="tns:GetListsRequest"/>
+            <wsdl:output message="tns:GetListsResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="CreateList">
+            <wsdl:input message="tns:CreateListRequest"/>
+            <wsdl:output message="tns:CreateListResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetList">
+            <wsdl:input message="tns:GetListRequest"/>
+            <wsdl:output message="tns:GetListResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateList">
+            <wsdl:input message="tns:UpdateListRequest"/>
+            <wsdl:output message="tns:UpdateListResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteList">
+            <wsdl:input message="tns:DeleteListRequest"/>
+            <wsdl:output message="tns:DeleteListResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+
+        <!-- Card operations -->
+        <wsdl:operation name="GetCards">
+            <wsdl:input message="tns:GetCardsRequest"/>
+            <wsdl:output message="tns:GetCardsResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="CreateCard">
+            <wsdl:input message="tns:CreateCardRequest"/>
+            <wsdl:output message="tns:CreateCardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetCard">
+            <wsdl:input message="tns:GetCardRequest"/>
+            <wsdl:output message="tns:GetCardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateCard">
+            <wsdl:input message="tns:UpdateCardRequest"/>
+            <wsdl:output message="tns:UpdateCardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteCard">
+            <wsdl:input message="tns:DeleteCardRequest"/>
+            <wsdl:output message="tns:DeleteCardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="AddCardChecklist">
+            <wsdl:input message="tns:AddCardChecklistRequest"/>
+            <wsdl:output message="tns:AddCardChecklistResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="AddCardComment">
+            <wsdl:input message="tns:AddCardCommentRequest"/>
+            <wsdl:output message="tns:AddCardCommentResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+
+        <!-- Comment operations -->
+        <wsdl:operation name="GetComments">
+            <wsdl:input message="tns:GetCommentsRequest"/>
+            <wsdl:output message="tns:GetCommentsResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="CreateComment">
+            <wsdl:input message="tns:CreateCommentRequest"/>
+            <wsdl:output message="tns:CreateCommentResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetComment">
+            <wsdl:input message="tns:GetCommentRequest"/>
+            <wsdl:output message="tns:GetCommentResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateComment">
+            <wsdl:input message="tns:UpdateCommentRequest"/>
+            <wsdl:output message="tns:UpdateCommentResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteComment">
+            <wsdl:input message="tns:DeleteCommentRequest"/>
+            <wsdl:output message="tns:DeleteCommentResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <!-- Binding -->
+    <wsdl:binding name="TrelloSoapBinding" type="tns:TrelloSoapPort">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        
+        <!-- Authentication operations binding -->
+        <wsdl:operation name="Login">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/Login"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="Logout">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/Logout"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <!-- User operations binding -->
+        <wsdl:operation name="GetUsers">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetUsers"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="CreateUser">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/CreateUser"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteUser">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/DeleteUser"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="ChangePassword">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/ChangePassword"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <!-- Board operations binding -->
+        <wsdl:operation name="GetBoards">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetBoards"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="CreateBoard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/CreateBoard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetBoard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetBoard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateBoard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/UpdateBoard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteBoard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/DeleteBoard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <!-- List operations binding -->
+        <wsdl:operation name="GetLists">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetLists"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="CreateList">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/CreateList"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetList">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetList"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateList">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/UpdateList"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteList">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/DeleteList"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <!-- Card operations binding -->
+        <wsdl:operation name="GetCards">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetCards"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="CreateCard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/CreateCard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetCard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetCard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateCard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/UpdateCard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteCard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/DeleteCard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="AddCardChecklist">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/AddCardChecklist"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="AddCardComment">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/AddCardComment"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <!-- Comment operations binding -->
+        <wsdl:operation name="GetComments">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetComments"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="CreateComment">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/CreateComment"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetComment">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetComment"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateComment">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/UpdateComment"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteComment">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/DeleteComment"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <!-- Service -->
+    <wsdl:service name="TrelloSoapService">
+        <wsdl:port name="TrelloSoapPort" binding="tns:TrelloSoapBinding">
+            <soap:address location="http://localhost:3067/soap/trello"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions> 

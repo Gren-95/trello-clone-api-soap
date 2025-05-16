@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://bee-srv.me/soap/trello/types"
+    targetNamespace="http://bee-srv.me/soap/trello/types"
+    elementFormDefault="qualified">
+
+    <!-- Common Types -->
+    <xs:complexType name="ServiceFaultType">
+        <xs:sequence>
+            <xs:element name="errorCode" type="xs:string"/>
+            <xs:element name="message" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="UserType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="username" type="xs:string"/>
+            <xs:element name="createdAt" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BoardMemberType">
+        <xs:sequence>
+            <xs:element name="userId" type="xs:string"/>
+            <xs:element name="role" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BoardType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="userId" type="xs:string"/>
+            <xs:element name="createdAt" type="xs:dateTime"/>
+            <xs:element name="isArchived" type="xs:boolean" default="false"/>
+            <xs:element name="background" type="xs:string" minOccurs="0"/>
+            <xs:element name="isTemplate" type="xs:boolean" default="false"/>
+            <xs:element name="isFavorite" type="xs:boolean" default="false"/>
+            <xs:element name="members" type="tns:BoardMembersType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BoardMembersType">
+        <xs:sequence>
+            <xs:element name="member" type="tns:BoardMemberType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ListType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="boardId" type="xs:string"/>
+            <xs:element name="userId" type="xs:string"/>
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="createdAt" type="xs:dateTime"/>
+            <xs:element name="updatedAt" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ChecklistItemType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="text" type="xs:string"/>
+            <xs:element name="completed" type="xs:boolean"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ChecklistItemsType">
+        <xs:sequence>
+            <xs:element name="item" type="tns:ChecklistItemType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ChecklistType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="items" type="tns:ChecklistItemsType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ChecklistsType">
+        <xs:sequence>
+            <xs:element name="checklist" type="tns:ChecklistType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CommentType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="userId" type="xs:string"/>
+            <xs:element name="text" type="xs:string"/>
+            <xs:element name="createdAt" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CommentsType">
+        <xs:sequence>
+            <xs:element name="comment" type="tns:CommentType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="LabelsType">
+        <xs:sequence>
+            <xs:element name="label" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CardType">
+        <xs:sequence>
+            <xs:element name="id" type="xs:string"/>
+            <xs:element name="listId" type="xs:string"/>
+            <xs:element name="userId" type="xs:string"/>
+            <xs:element name="title" type="xs:string"/>
+            <xs:element name="description" type="xs:string" minOccurs="0"/>
+            <xs:element name="createdAt" type="xs:dateTime"/>
+            <xs:element name="updatedAt" type="xs:dateTime"/>
+            <xs:element name="dueDate" type="xs:dateTime" minOccurs="0"/>
+            <xs:element name="labels" type="tns:LabelsType" minOccurs="0"/>
+            <xs:element name="checklist" type="tns:ChecklistsType" minOccurs="0"/>
+            <xs:element name="comments" type="tns:CommentsType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Response collections -->
+    <xs:complexType name="UsersType">
+        <xs:sequence>
+            <xs:element name="user" type="tns:UserType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BoardsType">
+        <xs:sequence>
+            <xs:element name="board" type="tns:BoardType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ListsType">
+        <xs:sequence>
+            <xs:element name="list" type="tns:ListType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CardsType">
+        <xs:sequence>
+            <xs:element name="card" type="tns:CardType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Authentication Elements -->
+    <xs:element name="LoginRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="password" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LoginResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LogoutRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LogoutResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- User Elements -->
+    <xs:element name="GetUsersRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetUsersResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="users" type="tns:UsersType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateUserRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="username" type="xs:string"/>
+                <xs:element name="password" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="user" type="tns:UserType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteUserRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteUserResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="success" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ChangePasswordRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="userId" type="xs:string"/>
+                <xs:element name="currentPassword" type="xs:string"/>
+                <xs:element name="newPassword" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="ChangePasswordResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Board Elements -->
+    <xs:element name="GetBoardsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetBoardsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="boards" type="tns:BoardsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateBoardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="background" type="xs:string" minOccurs="0"/>
+                <xs:element name="isTemplate" type="xs:boolean" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateBoardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="board" type="tns:BoardType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetBoardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="boardId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetBoardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="board" type="tns:BoardType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateBoardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="boardId" type="xs:string"/>
+                <xs:element name="name" type="xs:string" minOccurs="0"/>
+                <xs:element name="background" type="xs:string" minOccurs="0"/>
+                <xs:element name="isTemplate" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="isFavorite" type="xs:boolean" minOccurs="0"/>
+                <xs:element name="isArchived" type="xs:boolean" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateBoardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="board" type="tns:BoardType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteBoardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="boardId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteBoardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="success" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- List Elements -->
+    <xs:element name="GetListsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="boardId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetListsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="lists" type="tns:ListsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateListRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="boardId" type="xs:string"/>
+                <xs:element name="title" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateListResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="list" type="tns:ListType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetListRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetListResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="list" type="tns:ListType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateListRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+                <xs:element name="title" type="xs:string" minOccurs="0"/>
+                <xs:element name="position" type="xs:int" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateListResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="list" type="tns:ListType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteListRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteListResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="success" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Card Elements -->
+    <xs:element name="GetCardsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetCardsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cards" type="tns:CardsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+                <xs:element name="title" type="xs:string"/>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
+                <xs:element name="dueDate" type="xs:dateTime" minOccurs="0"/>
+                <xs:element name="labels" type="tns:LabelsType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateCardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="card" type="tns:CardType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="cardId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetCardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="card" type="tns:CardType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="cardId" type="xs:string"/>
+                <xs:element name="title" type="xs:string" minOccurs="0"/>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
+                <xs:element name="listId" type="xs:string" minOccurs="0"/>
+                <xs:element name="dueDate" type="xs:dateTime" minOccurs="0"/>
+                <xs:element name="labels" type="tns:LabelsType" minOccurs="0"/>
+                <xs:element name="position" type="xs:int" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateCardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="card" type="tns:CardType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="cardId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteCardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="success" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AddCardChecklistRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="cardId" type="xs:string"/>
+                <xs:element name="title" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AddCardChecklistResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="message" type="xs:string"/>
+                <xs:element name="checklist" type="tns:ChecklistType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AddCardCommentRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="cardId" type="xs:string"/>
+                <xs:element name="text" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="AddCardCommentResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="comment" type="tns:CommentType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Comment Elements -->
+    <xs:element name="GetCommentsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="authorId" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetCommentsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="comments" type="tns:CommentsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateCommentRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="text" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateCommentResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="comment" type="tns:CommentType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetCommentRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="commentId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetCommentResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="comment" type="tns:CommentType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateCommentRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="commentId" type="xs:string"/>
+                <xs:element name="text" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateCommentResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="comment" type="tns:CommentType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteCommentRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="commentId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteCommentResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="success" type="xs:boolean"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- Service Fault -->
+    <xs:element name="ServiceFault" type="tns:ServiceFaultType"/>
+</xs:schema> 
