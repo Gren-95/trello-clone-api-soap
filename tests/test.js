@@ -98,7 +98,7 @@ async function runTests() {
         
         // Test REST login for comparison
         try {
-            const restLoginResult = await axios.post(`${restUrl}/auth/login`, {
+            const restLoginResult = await axios.post(`${restUrl}/sessions`, {
                 username: soapUsername + '_rest',
                 password: soapPassword
             });

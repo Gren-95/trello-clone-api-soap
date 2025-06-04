@@ -5,6 +5,9 @@
   "main": "src/soap/soap-server.js",
   "scripts": {
     "start": "node src/soap/soap-server.js",
+    "start:soap": "node src/soap/soap-server.js",
+    "start:rest": "node src/rest/rest-server.js",
+    "start:both": "concurrently \"npm run start:soap\" \"npm run start:rest\"",
     "test": "node tests/test.js"
   },
   "dependencies": {
@@ -15,6 +18,7 @@
     "xml2js": "^0.5.0"
   },
   "devDependencies": {
-    "axios": "^1.9.0"
+    "axios": "^1.9.0",
+    "concurrently": "^8.2.2"
   }
 }

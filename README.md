@@ -45,6 +45,41 @@ This will:
 
 The WSDL will be available at: http://localhost:3067/soap/trello?wsdl
 
+### Running the REST API (for comparison testing)
+
+To run the REST API server for comparison testing:
+
+```bash
+npm run start:rest
+```
+
+This will start the REST API server on port 3000 at: http://localhost:3000
+
+### Running Both APIs Simultaneously
+
+To run both SOAP and REST APIs at the same time:
+
+```bash
+npm install  # Install dependencies including concurrently
+npm run start:both
+```
+
+This will start:
+- SOAP API on port 3067
+- REST API on port 3000
+
+**Individual commands:**
+```bash
+# SOAP only (port 3067)
+npm run start:soap
+
+# REST only (port 3000) 
+npm run start:rest
+
+# Both together
+npm run start:both
+```
+
 ### Running the Example Client
 
 To see the API in action with a simple client:
@@ -79,6 +114,27 @@ The tests verify all SOAP operations, including:
 - Comment operations (add, create, read, update, delete)
 
 The test script also attempts to compare responses with a REST API (if available) for functional equivalence verification.
+
+### REST API Comparison
+
+The tests expect a REST API running on `http://localhost:3000` with the following endpoints for comparison:
+
+**Authentication:**
+- `POST /sessions` - Create a session to get JWT token
+- Request: `{ username, password }`
+- Response: `{ token }`
+
+**User Management:**
+- `POST /users` - Create a new user
+- Request: `{ username, password }`
+- Response: `{ id, username, createdAt }`
+
+**Board Management:**
+- `POST /boards` - Create a new board
+- Request: `{ name, background, isTemplate }` with `Authorization: Bearer <token>` header
+- Response: `{ id, name, background, isTemplate }`
+
+If the REST API is not available, the tests will skip the comparison parts and only test the SOAP functionality.
 
 ## API Documentation
 
