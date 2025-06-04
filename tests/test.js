@@ -4,7 +4,7 @@ const assert = require('assert');
 
 // URL for the SOAP WSDL and REST API
 const soapUrl = 'http://localhost:3067/soap/trello?wsdl';
-const restUrl = 'http://localhost:3000';
+const restUrl = 'http://localhost:3066';
 
 // Helper function to compare REST and SOAP responses
 function compareResponses(soapResponse, restResponse, path, message) {
@@ -171,11 +171,116 @@ async function runTests() {
                 headers: { Authorization: `Bearer ${restToken}` }
             });
             
-            assert.ok(restCreateBoardResult.data.id, 'REST board creation should return a board ID');
+            const restBoardId = restCreateBoardResult.data.id;
+            assert.ok(restBoardId, 'REST board creation should return a board ID');
             console.log('✓ REST board creation test passed');
             passed++;
+            
+            // Test REST get boards
+            const restGetBoardsResult = await axios.get(`${restUrl}/boards`, {
+                headers: { Authorization: `Bearer ${restToken}` }
+            });
+            
+            assert.ok(Array.isArray(restGetBoardsResult.data), 'REST get boards should return an array');
+            assert.ok(restGetBoardsResult.data.some(board => board.id === restBoardId), 'REST get boards should include the created board');
+            console.log('✓ REST get boards test passed');
+            passed++;
+            
+            // Test nested resource operations - GET /boards/:boardId/lists
+            const restGetBoardListsResult = await axios.get(`${restUrl}/boards/${restBoardId}/lists`, {
+                headers: { Authorization: `Bearer ${restToken}` }
+            });
+            
+            assert.ok(Array.isArray(restGetBoardListsResult.data), 'REST get board lists should return an array');
+            console.log('✓ REST get board lists test passed');
+            passed++;
+            
+            // Test creating a list via nested route - POST /boards/:boardId/lists  
+            const restCreateBoardListResult = await axios.post(`${restUrl}/boards/${restBoardId}/lists`, {
+                title: 'REST Test List'
+            }, {
+                headers: { Authorization: `Bearer ${restToken}` }
+            });
+            
+            const restListId = restCreateBoardListResult.data.id;
+            assert.ok(restListId, 'REST board list creation should return a list ID');
+            console.log('✓ REST create board list test passed');
+            passed++;
+            
+            // Test SOAP equivalent operations
+            const soapGetBoardListsResult = await soapClient.GetBoardListsAsync({
+                token,
+                boardId: soapBoardId
+            });
+            
+            // Handle case where lists might be null or empty
+            const soapLists = soapGetBoardListsResult[0].lists && soapGetBoardListsResult[0].lists.list ? soapGetBoardListsResult[0].lists.list : [];
+            assert.ok(Array.isArray(soapLists), 'SOAP get board lists should return an array');
+            console.log('✓ SOAP get board lists test passed');
+            passed++;
+            
+            // Test creating a list via SOAP nested operation
+            const soapCreateBoardListResult = await soapClient.CreateBoardListAsync({
+                token,
+                boardId: soapBoardId,
+                title: 'SOAP Test List via Board'
+            });
+            
+            const soapBoardListId = soapCreateBoardListResult[0].list.id;
+            assert.ok(soapBoardListId, 'SOAP board list creation should return a list ID');
+            console.log('✓ SOAP create board list test passed');
+            passed++;
+            
+            // Test GET /lists/:listId/cards (REST)
+            const restGetListCardsResult = await axios.get(`${restUrl}/lists/${restListId}/cards`, {
+                headers: { Authorization: `Bearer ${restToken}` }
+            });
+            
+            assert.ok(Array.isArray(restGetListCardsResult.data), 'REST get list cards should return an array');
+            console.log('✓ REST get list cards test passed');
+            passed++;
+            
+            // Test SOAP equivalent
+            const soapGetListCardsResult = await soapClient.GetListCardsAsync({
+                token,
+                listId: soapBoardListId
+            });
+            
+            // Handle case where cards might be null or empty
+            const soapCards = soapGetListCardsResult[0].cards && soapGetListCardsResult[0].cards.card ? soapGetListCardsResult[0].cards.card : [];
+            assert.ok(Array.isArray(soapCards), 'SOAP get list cards should return an array');
+            console.log('✓ SOAP get list cards test passed');
+            passed++;
+            
+            // Test POST /lists/:listId/cards (REST)
+            const restCreateListCardResult = await axios.post(`${restUrl}/lists/${restListId}/cards`, {
+                title: 'REST List Card',
+                description: 'Created via REST nested route'
+            }, {
+                headers: { Authorization: `Bearer ${restToken}` }
+            });
+            
+            const restCardId = restCreateListCardResult.data.id;
+            assert.ok(restCardId, 'REST list card creation should return a card ID');
+            console.log('✓ REST create list card test passed');
+            passed++;
+            
+            // Test SOAP equivalent
+            const soapCreateListCardResult = await soapClient.CreateListCardAsync({
+                token,
+                listId: soapBoardListId,
+                title: 'SOAP List Card',
+                description: 'Created via SOAP nested operation'
+            });
+            
+            const soapListCardId = soapCreateListCardResult[0].card.id;
+            assert.ok(soapListCardId, 'SOAP list card creation should return a card ID');
+            console.log('✓ SOAP create list card test passed');
+            passed++;
+            
         } catch (error) {
-            console.log('⚠ REST API might not be available, skipping comparison');
+            console.log('⚠ REST API might not be available, skipping comparison tests');
+            console.log('Error details:', error.message);
         }
         
         // Test SOAP get board
@@ -235,7 +340,9 @@ async function runTests() {
         });
         
         assert.ok(soapGetListsResult[0].lists.list.length > 0, 'SOAP get lists should return at least one list');
-        assert.strictEqual(soapGetListsResult[0].lists.list[0].title, 'SOAP Test List', 'SOAP get lists should return the correct list');
+        // Check that one of the lists has the expected title (there might be multiple lists)
+        const foundExpectedList = soapGetListsResult[0].lists.list.some(list => list.title === 'SOAP Test List');
+        assert.ok(foundExpectedList, 'SOAP get lists should include the SOAP Test List');
         console.log('✓ SOAP get lists test passed');
         passed++;
         

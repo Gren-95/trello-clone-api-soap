@@ -194,6 +194,44 @@
         <wsdl:part name="parameters" element="types:DeleteCommentResponse"/>
     </wsdl:message>
 
+    <!-- Additional operations to match REST API structure -->
+    <wsdl:message name="GetBoardListsRequest">
+        <wsdl:part name="parameters" element="types:GetBoardListsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetBoardListsResponse">
+        <wsdl:part name="parameters" element="types:GetBoardListsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CreateBoardListRequest">
+        <wsdl:part name="parameters" element="types:CreateBoardListRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateBoardListResponse">
+        <wsdl:part name="parameters" element="types:CreateBoardListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="GetListCardsRequest">
+        <wsdl:part name="parameters" element="types:GetListCardsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="GetListCardsResponse">
+        <wsdl:part name="parameters" element="types:GetListCardsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CreateListCardRequest">
+        <wsdl:part name="parameters" element="types:CreateListCardRequest"/>
+    </wsdl:message>
+    <wsdl:message name="CreateListCardResponse">
+        <wsdl:part name="parameters" element="types:CreateListCardResponse"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateListCardsRequest">
+        <wsdl:part name="parameters" element="types:UpdateListCardsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="UpdateListCardsResponse">
+        <wsdl:part name="parameters" element="types:UpdateListCardsResponse"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteListCardsRequest">
+        <wsdl:part name="parameters" element="types:DeleteListCardsRequest"/>
+    </wsdl:message>
+    <wsdl:message name="DeleteListCardsResponse">
+        <wsdl:part name="parameters" element="types:DeleteListCardsResponse"/>
+    </wsdl:message>
+
     <!-- Fault message -->
     <wsdl:message name="ServiceFault">
         <wsdl:part name="parameters" element="types:ServiceFault"/>
@@ -350,6 +388,38 @@
         <wsdl:operation name="DeleteComment">
             <wsdl:input message="tns:DeleteCommentRequest"/>
             <wsdl:output message="tns:DeleteCommentResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        
+        <!-- Additional operations to match REST API structure -->
+        <wsdl:operation name="GetBoardLists">
+            <wsdl:input message="tns:GetBoardListsRequest"/>
+            <wsdl:output message="tns:GetBoardListsResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="CreateBoardList">
+            <wsdl:input message="tns:CreateBoardListRequest"/>
+            <wsdl:output message="tns:CreateBoardListResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="GetListCards">
+            <wsdl:input message="tns:GetListCardsRequest"/>
+            <wsdl:output message="tns:GetListCardsResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="CreateListCard">
+            <wsdl:input message="tns:CreateListCardRequest"/>
+            <wsdl:output message="tns:CreateListCardResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateListCards">
+            <wsdl:input message="tns:UpdateListCardsRequest"/>
+            <wsdl:output message="tns:UpdateListCardsResponse"/>
+            <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteListCards">
+            <wsdl:input message="tns:DeleteListCardsRequest"/>
+            <wsdl:output message="tns:DeleteListCardsResponse"/>
             <wsdl:fault name="ServiceFault" message="tns:ServiceFault"/>
         </wsdl:operation>
     </wsdl:portType>
@@ -695,6 +765,80 @@
         </wsdl:operation>
         <wsdl:operation name="DeleteComment">
             <soap:operation soapAction="http://bee-srv.me/soap/trello/DeleteComment"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        
+        <!-- Additional operations binding to match REST API structure -->
+        <wsdl:operation name="GetBoardLists">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetBoardLists"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="CreateBoardList">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/CreateBoardList"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="GetListCards">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/GetListCards"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="CreateListCard">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/CreateListCard"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateListCards">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/UpdateListCards"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ServiceFault">
+                <soap:fault name="ServiceFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="DeleteListCards">
+            <soap:operation soapAction="http://bee-srv.me/soap/trello/DeleteListCards"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>

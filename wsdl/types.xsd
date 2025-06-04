@@ -652,6 +652,119 @@
         </xs:complexType>
     </xs:element>
 
+    <!-- Additional operations to match REST API structure -->
+    <xs:element name="GetBoardListsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="boardId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetBoardListsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="lists" type="tns:ListsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateBoardListRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="boardId" type="xs:string"/>
+                <xs:element name="title" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateBoardListResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="list" type="tns:ListType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetListCardsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="GetListCardsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cards" type="tns:CardsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateListCardRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+                <xs:element name="title" type="xs:string"/>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
+                <xs:element name="dueDate" type="xs:dateTime" minOccurs="0"/>
+                <xs:element name="labels" type="tns:LabelsType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="CreateListCardResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="card" type="tns:CardType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateListCardsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+                <xs:element name="title" type="xs:string" minOccurs="0"/>
+                <xs:element name="description" type="xs:string" minOccurs="0"/>
+                <xs:element name="dueDate" type="xs:dateTime" minOccurs="0"/>
+                <xs:element name="labels" type="tns:LabelsType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="UpdateListCardsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cards" type="tns:CardsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteListCardsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="token" type="xs:string"/>
+                <xs:element name="listId" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="DeleteListCardsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="success" type="xs:boolean"/>
+                <xs:element name="deletedCount" type="xs:int"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
     <!-- Service Fault -->
     <xs:element name="ServiceFault" type="tns:ServiceFaultType"/>
 </xs:schema> 

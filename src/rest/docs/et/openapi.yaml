@@ -1,0 +1,1594 @@
+openapi: 3.0.0
+info:
+  title: Trello klooni API
+  description: Tagaplaan lihtsa Trello klooni rakenduse jaoks
+  version: 1.0.0
+
+servers:
+  - url: https://bee-srv.me
+    description: Tootmisserver
+  - url: http://localhost:3000
+    description: Lokaalne Arendusserver
+
+tags:
+  - name: Autentimine
+    description: Kasutaja autentimise lõpp-punktid
+  - name: Kasutajad
+    description: Kasutajate haldamise lõpp-punktid
+  - name: Tahvlid
+    description: Tahvlite haldamise lõpp-punktid
+  - name: Loendid
+    description: Loendite haldamise lõpp-punktid
+  - name: Kaardid
+    description: Kaartide haldamise lõpp-punktid
+  - name: Kommentaarid
+    description: Kommentaaride haldamise lõpp-punktid
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token, mis saadakse sisselogimise lõpp-punktist
+  schemas:
+    Board:
+      type: object
+      required:
+        - name
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        userId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        isArchived:
+          type: boolean
+          default: false
+        background:
+          type: string
+          description: URL või värvikood tahvli taustaks
+        isTemplate:
+          type: boolean
+          default: false
+        isFavorite:
+          type: boolean
+          default: false
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              userId:
+                type: string
+              role:
+                type: string
+                enum: [omanik, administraator, liige]
+    List:
+      type: object
+      required:
+        - title
+        - boardId
+      properties:
+        id:
+          type: string
+        boardId:
+          type: string
+        userId:
+          type: string
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Card:
+      type: object
+      required:
+        - title
+        - listId
+      properties:
+        id:
+          type: string
+        listId:
+          type: string
+        userId:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        labels:
+          type: array
+          items:
+            type: string
+        checklist:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              items:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    text:
+                      type: string
+                    completed:
+                      type: boolean
+        comments:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              userId:
+                type: string
+              text:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+          description: Üksikasjalik veateade
+    InternalServerError:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          enum: [Internal Server Error]
+        message:
+          type: string
+          description: Üksikasjalik veateade serveri vea kohta
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+    LoginResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: JWT token autentimiseks
+    User:
+      type: object
+      required:
+        - username
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+        password:
+          type: string
+          minLength: 6
+          format: password
+    LogoutResponse:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    CommentRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+    Comment:
+      type: object
+      required:
+        - id
+        - text
+      properties:
+        id:
+          type: string
+        text:
+          type: string
+
+security:
+  - bearerAuth: []
+
+paths:
+  /sessions:
+    post:
+      tags:
+        - Autentimine
+      security: []  # Sisselogimiseks ei ole autentimist nõutud
+      summary: Loo seanss JWT tokeni saamiseks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              username: "uusKasutaja"
+              password: "turvalineParool"
+      responses:
+        '200':
+          description: Edukalt sisse logitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Vigane päring
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Vigased kasutajatunnused
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Autentimine
+      security:
+        - bearerAuth: []
+      summary: Lõpeta praegune seanss ja tühista token
+      responses:
+        200:
+          description: Edukas väljalogimine
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogoutResponse'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /users:
+    get:
+      tags:
+        - Kasutajad
+      security:
+        - bearerAuth: []
+      summary: Saada kõik kasutajad
+      responses:
+        200:
+          description: Kasutajate loend
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Kasutajad
+      security: []  # Uue kasutaja loomiseks ei ole autentimist nõutud
+      summary: Loo uus kasutaja
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              username: "uusKasutaja"
+              password: "turvalineParool"
+      responses:
+        201:
+          description: Kasutaja loodud edukalt
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Loodud kasutaja URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Vigane kasutajanimi või parooli formaat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        409:
+          description: Kasutajanimi on juba olemas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+        - Kasutajad
+      security:
+        - bearerAuth: []
+      summary: Kustuta praeguse kasutaja konto
+      responses:
+        204:
+          description: Kasutaja edukalt kustutatud
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /boards:
+    get:
+      tags:
+        - Tahvlid
+      security:
+        - bearerAuth: []  # Nõuab autentimist GET jaoks
+      summary: Saada kõik tahvlid
+      responses:
+        200:
+          description: Tahvlite loend
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Board'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Tahvlid
+      security:
+        - bearerAuth: []
+      summary: Loo uus tahvel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+            example:
+              name: "Uus Tahvel"
+      responses:
+        201:
+          description: Tahvel loodud
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Loodud tahvli URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+        400:
+          description: Vigane päringu keha
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /boards/{boardId}:
+    get:
+      tags:
+        - Tahvlid
+      security:
+        - bearerAuth: []
+      summary: Saada konkreetne tahvel
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Tahvel edukalt saadud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda tahvlit vaatama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Tahvlit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Tahvlit ei leitud."
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - Tahvlid
+      security:
+        - bearerAuth: []
+      summary: Uuenda tahvlit
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                background:
+                  type: string
+                isTemplate:
+                  type: boolean
+                isFavorite:
+                  type: boolean
+                isArchived:
+                  type: boolean
+            example:
+              name: "Uuendatud Tahvli Nimi"
+              background: "#FFFFFF"
+              isTemplate: false
+              isFavorite: false
+              isArchived: false
+      responses:
+        200:
+          description: Tahvel edukalt uuendatud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+        400:
+          description: Vigane päringu keha
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda tahvlit uuendama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Tahvlit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Tahvlid
+      security:
+        - bearerAuth: []
+      summary: Kustuta tahvel
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Tahvel edukalt kustutatud
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda tahvlit kustutama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Tahvlit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /boards/{boardId}/lists:
+    get:
+      tags:
+        - Loendid
+      security:
+        - bearerAuth: []  # Nõuab autentimist GET jaoks
+      summary: Saada kõik loendid tahvli jaoks
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Loendid edukalt saadud
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/List'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda tahvli loendeid vaatama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Loendid
+      security:
+        - bearerAuth: []
+      summary: Loo uus loend
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+      responses:
+        201:
+          description: Loend edukalt loodud
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Loodud loendi URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud loendeid looma sellel tahvlil
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Tahvlit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /lists/{listId}:
+    get:
+      tags:
+        - Loendid
+      security:
+        - bearerAuth: []
+      summary: Saada konkreetne loend
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Loend edukalt saadud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Loendit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - Loendid
+      security:
+        - bearerAuth: []
+      summary: Uuenda loendit
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                position:
+                  type: integer
+                  minimum: 0
+      responses:
+        200:
+          description: Loend edukalt uuendatud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda loendit uuendama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Loendit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Loendid
+      security:
+        - bearerAuth: []
+      summary: Kustuta loend
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Loend edukalt kustutatud
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda loendit kustutama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Loendit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /lists/{listId}/cards:
+    get:
+      tags:
+        - Kaardid
+      security:
+        - bearerAuth: []  # Nõuab autentimist GET jaoks
+      summary: Saada kõik kaardid loendis
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Kaardid edukalt saadud
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Card'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud kaarte vaatama selles loendis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Kaardid
+      security:
+        - bearerAuth: []
+      summary: Loo uus kaart
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                description:
+                  type: string
+                dueDate:
+                  type: string
+                  format: date-time
+                labels:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        201:
+          description: Kaart edukalt loodud
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Loodud kaardi URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud kaarte looma selles loendis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Loendit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    put:
+      tags:
+        - Kaardid
+      security:
+        - bearerAuth: []
+      summary: Uuenda kaarti
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                description:
+                  type: string
+                dueDate:
+                  type: string
+                  format: date-time
+                labels:
+                  type: array
+                  items:
+                    type: string
+                position:
+                  type: integer
+                  minimum: 0
+            example:
+              title: "Uuendatud Kaardi Pealkiri"
+              description: "Uuendatud kirjeldus"
+              listId: "uusLoendiId"
+              position: 1
+      responses:
+        200:
+          description: Kaart edukalt uuendatud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda kaarti uuendama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Kaarti või loendit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Kaardid
+      security:
+        - bearerAuth: []
+      summary: Kustuta kaart
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Kaart edukalt kustutatud
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda kaarti kustutama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Loendit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /cards/{cardId}/checklist:
+    post:
+      tags:
+        - Kaardid
+      security:
+        - bearerAuth: []
+      summary: Lisa kontrollnimekiri kaardile
+      parameters:
+        - in: path
+          name: cardId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+            example:
+              title: "Uus Kontrollnimekiri"
+      responses:
+        201:
+          description: Kontrollnimekiri edukalt lisatud
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Loodud kontrollnimekirja URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Kontrollnimekiri edukalt lisatud"
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /cards/{cardId}/comments:
+    post:
+      tags:
+        - Kaardid
+      security:
+        - bearerAuth: []
+      summary: Lisa kommentaar kaardile
+      parameters:
+        - in: path
+          name: cardId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+      responses:
+        201:
+          description: Kommentaar edukalt lisatud
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Loodud kommentaari URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Vigane kommentaari tekst
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Kaarti ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /comments:
+    get:
+      tags:
+        - Kommentaarid
+      security:
+        - bearerAuth: []
+      summary: Saada kõik kommentaarid
+      parameters:
+        - in: query
+          name: authorId
+          required: false
+          schema:
+            type: string
+          description: Filtreeri kommentaarid autori ID järgi
+      responses:
+        200:
+          description: Kommentaaride loend
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Kommentaarid
+      security:
+        - bearerAuth: []
+      summary: Lisa uus kommentaar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+      responses:
+        201:
+          description: Kommentaar edukalt loodud
+          headers:
+            Location:
+              schema:
+                type: string
+              description: Loodud kommentaari URL
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Vigane kommentaari formaat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /comments/{commentId}:
+    get:
+      tags:
+        - Kommentaarid
+      security:
+        - bearerAuth: []
+      summary: Saada konkreetne kommentaar
+      parameters:
+        - in: path
+          name: commentId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Kommentaar edukalt saadud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda kommentaari vaatama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Kommentaari või kaarti ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      tags:
+        - Kommentaarid
+      security:
+        - bearerAuth: []
+      summary: Uuenda kommentaari
+      parameters:
+        - in: path
+          name: commentId
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+            example:
+              text: "Uuendatud kommentaari tekst"
+      responses:
+        200:
+          description: Kommentaar edukalt uuendatud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Kommentaari ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Kommentaarid
+      security:
+        - bearerAuth: []
+      summary: Eemalda kommentaar
+      parameters:
+        - in: path
+          name: commentId
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: Kommentaar edukalt kustutatud
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Kommentaari ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /users/{userId}:
+    put:
+      tags:
+        - Kasutajad
+      security:
+        - bearerAuth: []
+      summary: Muuda kasutaja parooli
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                  format: password
+                newPassword:
+                  type: string
+                  format: password
+                  minLength: 6
+            example:
+              currentPassword: "turvalineParool"
+              newPassword: "veelTurvalisemParool"
+      responses:
+        200:
+          description: Parool edukalt muudetud
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Parool edukalt uuendatud"
+        400:
+          description: Vigane parooli formaat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Praegune parool on vale
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda kasutajat uuendama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Kasutajat ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /boards/{boardId}/lists/{listId}:
+    get:
+      tags:
+        - Loendid
+      security:
+        - bearerAuth: []
+      summary: Saada konkreetne loend tahvlilt
+      parameters:
+        - in: path
+          name: boardId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Loend edukalt saadud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/List'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda tahvlit vaatama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Tahvlit või loendit ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /lists/{listId}/cards/{cardId}:
+    get:
+      tags:
+        - Kaardid
+      security:
+        - bearerAuth: []
+      summary: Saada konkreetne kaart loendist
+      parameters:
+        - in: path
+          name: listId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: cardId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Kaart edukalt saadud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        401:
+          description: Autoriseerimata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        403:
+          description: Keelatud - Ei ole volitatud seda loendit vaatama
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: Loendit või kaarti ei leitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Sisemine serveri viga
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'

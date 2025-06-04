@@ -66,19 +66,29 @@ npm run start:both
 
 This will start:
 - SOAP API on port 3067
-- REST API on port 3000
+- REST API on port 3066
 
 **Individual commands:**
 ```bash
 # SOAP only (port 3067)
 npm run start:soap
 
-# REST only (port 3000) 
+# REST only (port 3066) 
 npm run start:rest
 
 # Both together
 npm run start:both
+
+# Alternative: use the dedicated script
+./scripts/run-both.sh
 ```
+
+The `run-both.sh` script provides additional features:
+- Automatic dependency installation
+- Port conflict checking and cleanup
+- Health checks for both APIs
+- Colored output with status information
+- Direct links to API endpoints and documentation
 
 ### Running the Example Client
 
@@ -117,22 +127,57 @@ The test script also attempts to compare responses with a REST API (if available
 
 ### REST API Comparison
 
-The tests expect a REST API running on `http://localhost:3000` with the following endpoints for comparison:
+The tests expect a REST API running on `http://localhost:3066` with the following endpoints for comparison:
 
 **Authentication:**
 - `POST /sessions` - Create a session to get JWT token
 - Request: `{ username, password }`
 - Response: `{ token }`
+- `DELETE /sessions` - Logout (invalidate token)
 
 **User Management:**
 - `POST /users` - Create a new user
 - Request: `{ username, password }`
 - Response: `{ id, username, createdAt }`
+- `GET /users` - Get all users (requires authentication)
+- `PUT /users/:userId` - Change user password
+- `DELETE /users` - Delete current user account
 
 **Board Management:**
 - `POST /boards` - Create a new board
-- Request: `{ name, background, isTemplate }` with `Authorization: Bearer <token>` header
-- Response: `{ id, name, background, isTemplate }`
+- Request: `{ name, background?, isTemplate? }` with `Authorization: Bearer <token>` header
+- Response: `{ id, name, background, isTemplate, userId, createdAt, members }`
+- `GET /boards` - Get user's boards
+- `GET /boards/:boardId` - Get specific board
+- `PUT /boards/:boardId` - Update board
+- `DELETE /boards/:boardId` - Delete board
+
+**List Management:**
+- `GET /boards/:boardId/lists` - Get lists in a board
+- `POST /boards/:boardId/lists` - Create a new list
+- `GET /lists/:listId` - Get specific list
+- `PUT /lists/:listId` - Update list
+- `DELETE /lists/:listId` - Delete list
+
+**Card Management:**
+- `GET /lists/:listId/cards` - Get cards in a list
+- `POST /lists/:listId/cards` - Create a new card
+- `GET /cards/:cardId` - Get specific card
+- `PUT /cards/:cardId` - Update card
+- `DELETE /cards/:cardId` - Delete card
+- `POST /cards/:cardId/checklist` - Add checklist to card
+- `POST /cards/:cardId/comments` - Add comment to card
+
+**Comment Management:**
+- `GET /comments` - Get all comments
+- `POST /comments` - Create standalone comment
+- `GET /comments/:commentId` - Get specific comment
+- `PATCH /comments/:commentId` - Update comment
+- `DELETE /comments/:commentId` - Delete comment
+
+The REST API also includes Swagger UI documentation available at:
+- English: `http://localhost:3066/en`
+- Estonian: `http://localhost:3066/et`
 
 If the REST API is not available, the tests will skip the comparison parts and only test the SOAP functionality.
 
@@ -183,6 +228,14 @@ The service provides operations for:
 - GetComment
 - UpdateComment
 - DeleteComment
+
+### Additional Operations (matching REST API structure)
+- GetBoardLists (equivalent to `GET /boards/:boardId/lists`)
+- CreateBoardList (equivalent to `POST /boards/:boardId/lists`)
+- GetListCards (equivalent to `GET /lists/:listId/cards`)
+- CreateListCard (equivalent to `POST /lists/:listId/cards`)
+- UpdateListCards (equivalent to `PUT /lists/:listId/cards` - bulk update)
+- DeleteListCards (equivalent to `DELETE /lists/:listId/cards` - bulk delete)
 
 ## Error Handling
 

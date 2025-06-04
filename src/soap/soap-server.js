@@ -1179,6 +1179,280 @@ const trelloSoapService = {
                 } catch (error) {
                     throw error;
                 }
+            },
+            
+            // Additional operations to match REST API structure
+            GetBoardLists: function(args) {
+                const { token, boardId } = args;
+                
+                try {
+                    // Verify token
+                    const decoded = verifyToken(token);
+                    
+                    // Find the board
+                    const board = boards.find(b => b.id === boardId);
+                    if (!board) {
+                        throw {
+                            errorCode: 'NOT_FOUND',
+                            message: 'Board not found.'
+                        };
+                    }
+                    
+                    // Check if user has permission to view the board
+                    if (!board.members.some(member => member.userId === decoded.id.toString())) {
+                        throw {
+                            errorCode: 'FORBIDDEN',
+                            message: 'Not authorized to view lists in this board.'
+                        };
+                    }
+                    
+                    // Get lists for this board
+                    const boardLists = lists.filter(list => list.boardId === boardId);
+                    
+                    return {
+                        lists: {
+                            list: boardLists
+                        }
+                    };
+                } catch (error) {
+                    throw error;
+                }
+            },
+
+            CreateBoardList: function(args) {
+                const { token, boardId, title } = args;
+                
+                try {
+                    // Verify token
+                    const decoded = verifyToken(token);
+                    
+                    // Validate required fields
+                    if (!title) {
+                        throw {
+                            errorCode: 'BAD_REQUEST',
+                            message: 'Title is required.'
+                        };
+                    }
+                    
+                    // Find the board
+                    const board = boards.find(b => b.id === boardId);
+                    if (!board) {
+                        throw {
+                            errorCode: 'NOT_FOUND',
+                            message: 'Board not found.'
+                        };
+                    }
+                    
+                    // Check if user has permission to create lists in this board
+                    if (!board.members.some(member => member.userId === decoded.id.toString())) {
+                        throw {
+                            errorCode: 'FORBIDDEN',
+                            message: 'Not authorized to create lists in this board.'
+                        };
+                    }
+                    
+                    const newList = {
+                        id: (lists.length + 1).toString(),
+                        boardId: boardId,
+                        userId: decoded.id.toString(),
+                        title: title,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    lists.push(newList);
+                    
+                    return { list: newList };
+                } catch (error) {
+                    throw error;
+                }
+            },
+
+            GetListCards: function(args) {
+                const { token, listId } = args;
+                
+                try {
+                    // Verify token
+                    const decoded = verifyToken(token);
+                    
+                    // Find the list
+                    const list = lists.find(l => l.id === listId);
+                    if (!list) {
+                        throw {
+                            errorCode: 'NOT_FOUND',
+                            message: 'List not found.'
+                        };
+                    }
+                    
+                    // Check if user has permission to view cards
+                    const board = boards.find(b => b.id === list.boardId);
+                    if (!board || !board.members.some(member => member.userId === decoded.id.toString())) {
+                        throw {
+                            errorCode: 'FORBIDDEN',
+                            message: 'Not authorized to view cards in this list.'
+                        };
+                    }
+                    
+                    // Get cards for this list
+                    const listCards = cards.filter(card => card.listId === listId);
+                    
+                    return {
+                        cards: {
+                            card: listCards
+                        }
+                    };
+                } catch (error) {
+                    throw error;
+                }
+            },
+
+            CreateListCard: function(args) {
+                const { token, listId, title, description, dueDate, labels } = args;
+                
+                try {
+                    // Verify token
+                    const decoded = verifyToken(token);
+                    
+                    // Validate required fields
+                    if (!title) {
+                        throw {
+                            errorCode: 'BAD_REQUEST',
+                            message: 'Title is required.'
+                        };
+                    }
+                    
+                    // Find the list
+                    const list = lists.find(l => l.id === listId);
+                    if (!list) {
+                        throw {
+                            errorCode: 'NOT_FOUND',
+                            message: 'List not found.'
+                        };
+                    }
+                    
+                    // Check if user has permission to create cards
+                    const board = boards.find(b => b.id === list.boardId);
+                    if (!board || !board.members.some(member => member.userId === decoded.id.toString())) {
+                        throw {
+                            errorCode: 'FORBIDDEN',
+                            message: 'Not authorized to create cards in this list.'
+                        };
+                    }
+                    
+                    const newCard = {
+                        id: (cards.length + 1).toString(),
+                        listId: listId,
+                        userId: decoded.id.toString(),
+                        title: title,
+                        description: description || '',
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        dueDate: dueDate || null,
+                        labels: labels || [],
+                        checklist: [],
+                        comments: []
+                    };
+                    
+                    cards.push(newCard);
+                    
+                    return { card: newCard };
+                } catch (error) {
+                    throw error;
+                }
+            },
+
+            UpdateListCards: function(args) {
+                const { token, listId, title, description, dueDate, labels } = args;
+                
+                try {
+                    // Verify token
+                    const decoded = verifyToken(token);
+                    
+                    // Find the list
+                    const list = lists.find(l => l.id === listId);
+                    if (!list) {
+                        throw {
+                            errorCode: 'NOT_FOUND',
+                            message: 'List not found.'
+                        };
+                    }
+                    
+                    // Check if user has permission to update cards in this list
+                    const board = boards.find(b => b.id === list.boardId);
+                    if (!board || !board.members.some(member => member.userId === decoded.id.toString())) {
+                        throw {
+                            errorCode: 'FORBIDDEN',
+                            message: 'Not authorized to update cards in this list.'
+                        };
+                    }
+                    
+                    // Find all cards in this list
+                    const listCards = cards.filter(card => card.listId === listId);
+                    
+                    if (listCards.length === 0) {
+                        throw {
+                            errorCode: 'NOT_FOUND',
+                            message: 'No cards found in this list.'
+                        };
+                    }
+                    
+                    // Update all cards in the list with provided fields
+                    const updatedCards = listCards.map(card => {
+                        if (title !== undefined) card.title = title;
+                        if (description !== undefined) card.description = description;
+                        if (dueDate !== undefined) card.dueDate = dueDate;
+                        if (labels !== undefined) card.labels = labels;
+                        card.updatedAt = new Date().toISOString();
+                        return card;
+                    });
+                    
+                    return {
+                        cards: {
+                            card: updatedCards
+                        }
+                    };
+                } catch (error) {
+                    throw error;
+                }
+            },
+
+            DeleteListCards: function(args) {
+                const { token, listId } = args;
+                
+                try {
+                    // Verify token
+                    const decoded = verifyToken(token);
+                    
+                    // Find the list
+                    const list = lists.find(l => l.id === listId);
+                    if (!list) {
+                        throw {
+                            errorCode: 'NOT_FOUND',
+                            message: 'List not found.'
+                        };
+                    }
+                    
+                    // Check if user has permission to delete cards in this list
+                    const board = boards.find(b => b.id === list.boardId);
+                    if (!board || !board.members.some(member => member.userId === decoded.id.toString())) {
+                        throw {
+                            errorCode: 'FORBIDDEN',
+                            message: 'Not authorized to delete cards in this list.'
+                        };
+                    }
+                    
+                    // Delete all cards in this list
+                    const initialLength = cards.length;
+                    cards = cards.filter(card => card.listId !== listId);
+                    const deletedCount = initialLength - cards.length;
+                    
+                    return { 
+                        success: true,
+                        deletedCount: deletedCount
+                    };
+                } catch (error) {
+                    throw error;
+                }
             }
         }
     }
