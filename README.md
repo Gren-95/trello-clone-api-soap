@@ -22,6 +22,47 @@ This project provides a SOAP API implementation for a Trello-like application. I
 - npm (comes with Node.js)
 - curl (for checking server status)
 
+## Environment Setup
+
+Before running the application, you need to create a `.env` file in the project root with the required environment variables.
+
+### Creating the .env file
+
+Create a `.env` file in the project root directory:
+
+```bash
+# Create the .env file
+echo "JWT_SECRET=your_super_secret_jwt_key_here" > .env
+```
+
+Or manually create a `.env` file with the following content:
+
+```env
+JWT_SECRET=your_super_secret_jwt_key_here
+```
+
+### Environment Variables
+
+| Variable | Description | Required | Default |
+|----------|-------------|----------|---------|
+| `JWT_SECRET` | Secret key used for JWT token generation and verification | **Yes** | None |
+
+**Important Notes:**
+- The `JWT_SECRET` is **required** for both SOAP and REST APIs to function properly
+- In production, use a strong, randomly generated secret key
+- Keep your `.env` file secure and never commit it to version control
+- The example value `your_super_secret_jwt_key_here` is for development only
+
+### Alternative: Using the run script
+
+The `./scripts/run.sh` script will automatically create a `.env` file with a default JWT secret if it doesn't exist, so you can also just run:
+
+```bash
+./scripts/run.sh
+```
+
+And it will handle the environment setup for you.
+
 ## Building and Running
 
 ### Setup and Installation
